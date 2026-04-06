@@ -966,8 +966,12 @@ kbd {
     display: none;
   }
 
-  html.is-mobile-portrait .game-stage.show-rotate-notice .rotate-notice {
+  .game-stage.show-rotate-notice .rotate-notice {
     display: flex;
+  }
+
+  .game-stage.show-rotate-notice .touch-controls {
+    display: none !important;
   }
 }
 

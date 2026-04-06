@@ -309,18 +309,19 @@
     const viewport = window.visualViewport;
     const width = viewport ? viewport.width : window.innerWidth;
     const height = viewport ? viewport.height : window.innerHeight;
+    const landscape = window.matchMedia("(orientation: landscape)").matches || width > height;
     document.documentElement.style.setProperty("--app-vw", `${width}px`);
     document.documentElement.style.setProperty("--app-vh", `${height}px`);
     document.documentElement.classList.toggle("is-android", IS_ANDROID);
-    document.documentElement.classList.toggle("is-mobile-portrait", IS_TOUCH_DEVICE && width < height);
-    document.documentElement.classList.toggle("is-mobile-landscape", IS_TOUCH_DEVICE && width >= height);
+    document.documentElement.classList.toggle("is-mobile-portrait", IS_TOUCH_DEVICE && !landscape);
+    document.documentElement.classList.toggle("is-mobile-landscape", IS_TOUCH_DEVICE && landscape);
   }
 
   function isLandscapeViewport() {
     const viewport = window.visualViewport;
     const width = viewport ? viewport.width : window.innerWidth;
     const height = viewport ? viewport.height : window.innerHeight;
-    return width >= height;
+    return window.matchMedia("(orientation: landscape)").matches || width > height;
   }
 
   function setOverlayVisibility(element, visible) {
