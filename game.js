@@ -15,6 +15,7 @@
     playButton: document.getElementById("play-button"),
     retryButton: document.getElementById("retry-button"),
     shareButton: document.getElementById("share-button"),
+    fullscreenFab: document.getElementById("fullscreen-fab"),
     score: document.getElementById("score"),
     highScore: document.getElementById("high-score"),
     finalScore: document.getElementById("final-score"),
@@ -329,10 +330,12 @@
   }
 
   function updateRotatePromptState() {
-    ui.gameStage.classList.toggle(
-      "show-rotate-notice",
-      IS_TOUCH_DEVICE && !state.over && !state.dying && (state.pendingStart || state.orientationHold)
-    );
+    const blockedPortrait = IS_TOUCH_DEVICE && !state.over && !state.dying && (state.pendingStart || state.orientationHold);
+    ui.gameStage.classList.toggle("show-rotate-notice", blockedPortrait);
+    ui.gameStage.classList.toggle("portrait-blocked", blockedPortrait);
+    if (ui.fullscreenFab) {
+      ui.fullscreenFab.hidden = !(IS_TOUCH_DEVICE && isLandscapeViewport() && !blockedPortrait);
+    }
   }
 
   function syncOrientationState() {
@@ -358,6 +361,22 @@
     }
 
     updateRotatePromptState();
+  }
+
+  async function enterFullscreen() {
+    if (!IS_TOUCH_DEVICE || !isLandscapeViewport() || !ui.gameStage) {
+      return;
+    }
+
+    try {
+      if (ui.gameStage.requestFullscreen) {
+        await ui.gameStage.requestFullscreen({ navigationUI: "hide" });
+      } else if (ui.gameStage.webkitRequestFullscreen) {
+        ui.gameStage.webkitRequestFullscreen();
+      }
+    } catch (error) {
+      // Some mobile browsers reject fullscreen requests.
+    }
   }
 
   function resetGame() {
@@ -1672,6 +1691,9 @@
   ui.retryButton.addEventListener("click", startGame);
   if (ui.shareButton) {
     ui.shareButton.addEventListener("click", shareResult);
+  }
+  if (ui.fullscreenFab) {
+    ui.fullscreenFab.addEventListener("click", enterFullscreen);
   }
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("resize", () => {
