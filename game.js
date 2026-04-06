@@ -98,6 +98,7 @@
     paused: false,
     over: false,
     dying: false,
+    pendingStart: false,
     score: 0,
     highScore: Number(localStorage.getItem("ducky-dash-high-score") || 0),
     distance: 0,
@@ -314,8 +315,22 @@
     document.documentElement.classList.toggle("is-mobile-landscape", IS_TOUCH_DEVICE && width >= height);
   }
 
+  function isLandscapeViewport() {
+    const viewport = window.visualViewport;
+    const width = viewport ? viewport.width : window.innerWidth;
+    const height = viewport ? viewport.height : window.innerHeight;
+    return width >= height;
+  }
+
   function setOverlayVisibility(element, visible) {
     element.classList.toggle("overlay-visible", visible);
+  }
+
+  function updateRotatePromptState() {
+    ui.gameStage.classList.toggle(
+      "show-rotate-notice",
+      IS_TOUCH_DEVICE && !state.over && !state.dying && (state.running || state.pendingStart)
+    );
   }
 
   function resetGame() {
@@ -323,6 +338,7 @@
     state.paused = false;
     state.over = false;
     state.dying = false;
+    state.pendingStart = false;
     state.score = 0;
     state.distance = 0;
     state.speed = CONFIG.startSpeed;
@@ -384,12 +400,20 @@
       ui.shieldBanner.classList.remove("is-visible");
     }
     updateHud();
+    updateRotatePromptState();
   }
 
   function startGame() {
+    if (IS_TOUCH_DEVICE && !isLandscapeViewport()) {
+      state.pendingStart = true;
+      updateRotatePromptState();
+      return;
+    }
+
     if (!state.running) {
       resetGame();
     }
+    updateRotatePromptState();
   }
 
   async function shareResult() {
@@ -433,6 +457,7 @@
     ui.finalScore.textContent = String(state.score);
     ui.bestScore.textContent = String(state.highScore);
     setOverlayVisibility(ui.gameOverScreen, true);
+    updateRotatePromptState();
   }
 
   function startDeath() {
@@ -441,6 +466,7 @@
     }
     state.running = false;
     state.dying = true;
+    updateRotatePromptState();
     player.deathStartedOnGround = player.onGround;
     trex.deathX = trex.x;
     player.deathFreezeOffsetX = player.onGround ? 10 : 0;
@@ -1615,16 +1641,27 @@
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("resize", () => {
     updateViewportMetrics();
+    if (state.pendingStart && isLandscapeViewport()) {
+      startGame();
+    }
     resizeCanvas();
   });
   window.addEventListener("orientationchange", () => {
     window.setTimeout(() => {
       updateViewportMetrics();
+      if (state.pendingStart && isLandscapeViewport()) {
+        startGame();
+      }
       resizeCanvas();
     }, 120);
   });
   if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", updateViewportMetrics);
+    window.visualViewport.addEventListener("resize", () => {
+      updateViewportMetrics();
+      if (state.pendingStart && isLandscapeViewport()) {
+        startGame();
+      }
+    });
     window.visualViewport.addEventListener("scroll", updateViewportMetrics);
   }
 
@@ -1632,6 +1669,7 @@
   resizeCanvas();
   bindTouchControls();
   updateHud();
+  updateRotatePromptState();
   render();
   requestAnimationFrame(frame);
 })();

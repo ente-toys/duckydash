@@ -965,6 +965,10 @@ kbd {
   html.is-mobile-portrait .rotate-notice {
     display: none;
   }
+
+  html.is-mobile-portrait .game-stage.show-rotate-notice .rotate-notice {
+    display: flex;
+  }
 }
 
 @media (max-width: 900px) and (orientation: landscape) {
