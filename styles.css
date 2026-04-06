@@ -716,11 +716,6 @@ body {
   font-weight: 700;
 }
 
-.mobile-fullscreen-button,
-.fullscreen-fab {
-  display: none;
-}
-
 .action-button:hover,
 .touch-button:active {
   transform: translateY(-1px) scale(1.01);
@@ -745,28 +740,6 @@ body {
   font-size: 0.82rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-.fullscreen-fab {
-  position: absolute;
-  right: 18px;
-  bottom: 18px;
-  z-index: 4;
-  min-width: 72px;
-  min-height: 44px;
-  padding: 10px 14px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(17, 17, 17, 0.88);
-  color: #ffffff;
-  font-family: var(--font-ui);
-  font-size: 0.88rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
-  -webkit-tap-highlight-color: transparent;
 }
 
 .touch-controls {
@@ -898,13 +871,6 @@ kbd {
       inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 
-  .mobile-fullscreen-button,
-  .fullscreen-fab {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .overlay {
     padding: 12px;
   }
@@ -917,8 +883,11 @@ kbd {
 
   #start-screen .start-card-banner {
     width: calc(100% + 36px);
-    height: clamp(160px, 42vw, 220px);
+    height: auto;
+    max-height: min(42vw, 220px);
     margin: -18px -18px 14px;
+    object-fit: contain;
+    object-position: center top;
     border-radius: 22px 22px 16px 16px;
   }
 
@@ -962,15 +931,37 @@ kbd {
     left: 10px;
   }
 
-  .fullscreen-fab {
-    right: 10px;
-    bottom: max(10px, calc(env(safe-area-inset-bottom) + 4px));
-  }
-
   #game-canvas {
     width: 100%;
     height: 100%;
     aspect-ratio: auto;
+  }
+
+  html.is-mobile-landscape .game-stage {
+    width: min(var(--app-vw), calc(var(--app-vh) * 16 / 9));
+    height: min(var(--app-vh), calc(var(--app-vw) * 9 / 16));
+  }
+
+  html.is-mobile-landscape .touch-controls {
+    display: flex;
+  }
+
+  html.is-mobile-landscape .rotate-notice {
+    display: none;
+  }
+
+  html.is-mobile-portrait .game-stage {
+    width: var(--app-vw);
+    height: var(--app-vh);
+    max-height: var(--app-vh);
+  }
+
+  html.is-mobile-portrait .touch-controls {
+    display: none;
+  }
+
+  html.is-mobile-portrait .rotate-notice {
+    display: flex;
   }
 }
 
@@ -1076,7 +1067,7 @@ kbd {
 
   .game-stage {
     width: var(--app-vw);
-    height: calc(var(--app-vw) * 9 / 16);
+    height: var(--app-vh);
     max-height: var(--app-vh);
   }
 
@@ -1123,12 +1114,56 @@ kbd {
   }
 
   #game-over-screen .overlay-panel {
-    margin-top: 88px;
+    width: min(100%, 340px);
+    margin-top: 64px;
+    padding: 16px 14px 14px;
   }
 
   #game-over-screen .game-over-topper {
-    bottom: calc(100% - 18px);
-    width: min(74%, 210px);
+    bottom: calc(100% - 8px);
+    width: min(58%, 148px);
+    max-width: 148px;
+    height: auto;
+  }
+
+  #game-over-screen .overlay-panel h2 {
+    font-size: clamp(1.1rem, 5vw, 1.45rem);
+    margin-bottom: 10px;
+  }
+
+  #game-over-screen .overlay-body {
+    margin-bottom: 14px;
+    font-size: 0.88rem;
+    line-height: 1.4;
+  }
+
+  #game-over-screen .results-row {
+    gap: 8px;
+  }
+
+  #game-over-screen .results-row > div {
+    padding: 10px 10px 11px;
+    border-radius: 12px;
+  }
+
+  #game-over-screen .results-label {
+    margin-bottom: 6px;
+    font-size: 0.58rem;
+  }
+
+  #game-over-screen .results-row strong {
+    font-size: 1.65rem;
+  }
+
+  #game-over-screen .overlay-actions {
+    margin: 14px 0 6px;
+    gap: 8px;
+  }
+
+  #game-over-screen .overlay-actions .action-button {
+    min-width: 0;
+    padding: 12px 14px;
+    font-size: 0.9rem;
   }
 
   #game-canvas {
@@ -1136,7 +1171,7 @@ kbd {
   }
 
   .touch-controls {
-    display: flex;
+    display: none;
   }
 
   .touch-button {
@@ -1148,11 +1183,20 @@ kbd {
   }
 
   .rotate-notice {
-    display: none;
+    display: flex;
   }
 
   .results-row {
     gap: 10px;
+  }
+
+  img,
+  .brand-banner,
+  .site-footer-mark,
+  .game-over-topper,
+  .start-card-banner {
+    max-width: 100%;
+    height: auto;
   }
 }
 
@@ -1170,11 +1214,6 @@ kbd {
     min-width: 74px;
     height: 74px;
     min-height: 74px;
-  }
-
-  html.is-android .fullscreen-fab {
-    min-width: 76px;
-    min-height: 48px;
   }
 }
 

@@ -15,9 +15,6 @@
     playButton: document.getElementById("play-button"),
     retryButton: document.getElementById("retry-button"),
     shareButton: document.getElementById("share-button"),
-    fullscreenButton: document.getElementById("fullscreen-button"),
-    fullscreenRetryButton: document.getElementById("fullscreen-retry-button"),
-    fullscreenFab: document.getElementById("fullscreen-fab"),
     score: document.getElementById("score"),
     highScore: document.getElementById("high-score"),
     finalScore: document.getElementById("final-score"),
@@ -29,12 +26,6 @@
     pauseBadge: document.getElementById("pause-badge"),
     jumpTouch: document.getElementById("jump-touch"),
   };
-
-  const fullscreenButtons = [
-    ui.fullscreenButton,
-    ui.fullscreenRetryButton,
-    ui.fullscreenFab,
-  ].filter(Boolean);
 
   const TREX_SVG = `<svg width="183" height="227" viewBox="0 0 183 227" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="139.5" y="47" width="4" height="31" fill="white"/><rect x="157.5" y="47" width="4" height="31" fill="white"/><rect x="145.5" y="47" width="4" height="31" fill="white"/><rect x="139.5" y="84" width="4" height="13" fill="white"/><rect x="151.5" y="47" width="4" height="31" fill="white"/><rect x="157.5" y="84" width="4" height="13" fill="white"/><rect x="145.5" y="84" width="4" height="13" fill="white"/><rect x="163.5" y="47" width="4" height="31" fill="white"/><rect x="151.5" y="84" width="4" height="13" fill="white"/><rect x="169.5" y="47" width="4" height="31" fill="white"/><rect x="176.5" y="47" width="4" height="31" fill="white"/><rect x="129" width="3" height="7" fill="white"/><path d="M35 190.5H45V226.5H62.5V217H53.5V208H62.5V199H71.5V189H81V198.5H89.5V226H110.5V217H101.5V181H110.5V171.5H119V155H129V125H138.5V133.5H145.5V115H128V97.5H164V88.5H136V66H182.5V37H173.5V28H101.5V38.5H89.5V97.5H81V106H68.5V115H53.5V125H45V133.5H27V125H17.5V115H8.5V97.5H0V151.5H9.5V159H17.5V172.5H27V181H35V190.5Z" fill="#525252"/><rect x="114.5" y="41" width="12" height="31" fill="white"/><rect x="143.5" y="88" width="8" height="6" fill="#FF4747"/><rect x="150.5" y="88" width="4" height="23" fill="#FF4747"/><path d="M114.5 21C114.5 12.1634 121.663 5 130.5 5H131.5C140.337 5 147.5 12.1634 147.5 21H114.5Z" fill="#F4D93B"/><rect x="117.5" width="12" height="2" fill="#3E81BC"/><rect x="131.5" width="12" height="2" fill="#3E81BC"/><mask id="mask0_19705_10445" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="114" y="5" width="34" height="16"><path d="M114.5 21C114.5 12.1634 121.663 5 130.5 5H131.5C140.337 5 147.5 12.1634 147.5 21H114.5Z" fill="#F7FF00"/></mask><g mask="url(#mask0_19705_10445)"><path d="M122 20.5C122 16.8333 123.6 8.3 130 3.5H119C116.833 5.16667 112.4 8.6 112 9C111.6 9.4 110.833 17.1667 110.5 21L122 20.5Z" fill="#3E81BC"/><path d="M137.5 20.5C137.5 16.8333 135.9 8.3 129.5 3.5H140.5C142.667 5.16667 147.1 8.6 147.5 9C147.9 9.4 148.667 17.1667 149 21L137.5 20.5Z" fill="#FF3535"/></g><rect x="112.5" y="20" width="55" height="2" fill="white"/><rect opacity="0.11" x="75.5" y="113" width="21" height="12" fill="#D9D9D9"/><rect opacity="0.11" x="56.5" y="130" width="21" height="25" fill="#D9D9D9"/><rect opacity="0.11" x="85.5" y="138" width="21" height="10" fill="#D9D9D9"/><rect opacity="0.11" x="25.5" y="143" width="21" height="10" fill="#D9D9D9"/><rect x="119.5" y="47" width="4" height="13" fill="#FF4747"/></svg>`;
 
@@ -319,60 +310,19 @@
     document.documentElement.style.setProperty("--app-vw", `${width}px`);
     document.documentElement.style.setProperty("--app-vh", `${height}px`);
     document.documentElement.classList.toggle("is-android", IS_ANDROID);
+    document.documentElement.classList.toggle("is-mobile-portrait", IS_TOUCH_DEVICE && width < height);
+    document.documentElement.classList.toggle("is-mobile-landscape", IS_TOUCH_DEVICE && width >= height);
   }
 
-  function getFullscreenElement() {
-    return document.fullscreenElement || document.webkitFullscreenElement || null;
-  }
-
-  function getFullscreenTarget() {
-    return document.querySelector(".game-stage");
-  }
-
-  function isFullscreenSupported() {
-    const target = getFullscreenTarget();
-    return Boolean(
-      target &&
-      (target.requestFullscreen || target.webkitRequestFullscreen)
-    );
-  }
-
-  function updateFullscreenButtons() {
-    const supported = isFullscreenSupported() && IS_TOUCH_DEVICE;
-    const active = Boolean(getFullscreenElement());
-    fullscreenButtons.forEach((button) => {
-      button.hidden = !supported;
-      button.textContent = active ? "Exit full" : "Full screen";
-      button.setAttribute("aria-label", active ? "Exit full screen" : "Enter full screen");
-    });
-  }
-
-  async function toggleFullscreen() {
-    if (!IS_TOUCH_DEVICE || !isFullscreenSupported()) {
+  async function tryLockLandscape() {
+    if (!IS_TOUCH_DEVICE || !screen.orientation || !screen.orientation.lock) {
       return;
     }
 
-    const fullscreenElement = getFullscreenElement();
     try {
-      if (fullscreenElement) {
-        if (document.exitFullscreen) {
-          await document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
-      } else {
-        const target = getFullscreenTarget();
-        if (target.requestFullscreen) {
-          await target.requestFullscreen({ navigationUI: "hide" });
-        } else if (target.webkitRequestFullscreen) {
-          target.webkitRequestFullscreen();
-        }
-      }
+      await screen.orientation.lock("landscape");
     } catch (error) {
-      // Fullscreen support varies across mobile browsers, so ignore rejected requests.
-    } finally {
-      updateFullscreenButtons();
-      resizeCanvas();
+      // Mobile browsers may reject orientation lock depending on platform and gesture context.
     }
   }
 
@@ -452,6 +402,7 @@
     if (!state.running) {
       resetGame();
     }
+    tryLockLandscape();
   }
 
   async function shareResult() {
@@ -1674,16 +1625,17 @@
   if (ui.shareButton) {
     ui.shareButton.addEventListener("click", shareResult);
   }
-  fullscreenButtons.forEach((button) => {
-    button.addEventListener("click", toggleFullscreen);
-  });
   window.addEventListener("keydown", handleKeyDown);
   window.addEventListener("resize", () => {
     updateViewportMetrics();
     resizeCanvas();
   });
-  document.addEventListener("fullscreenchange", updateFullscreenButtons);
-  document.addEventListener("webkitfullscreenchange", updateFullscreenButtons);
+  window.addEventListener("orientationchange", () => {
+    window.setTimeout(() => {
+      updateViewportMetrics();
+      resizeCanvas();
+    }, 120);
+  });
   if (window.visualViewport) {
     window.visualViewport.addEventListener("resize", updateViewportMetrics);
     window.visualViewport.addEventListener("scroll", updateViewportMetrics);
@@ -1693,7 +1645,6 @@
   resizeCanvas();
   bindTouchControls();
   updateHud();
-  updateFullscreenButtons();
   render();
   requestAnimationFrame(frame);
 })();
