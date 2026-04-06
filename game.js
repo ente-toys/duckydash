@@ -352,6 +352,14 @@
       return;
     }
 
+    if (state.pendingStart) {
+      state.orientationHold = true;
+      state.paused = true;
+      ui.pauseBadge.style.display = "none";
+      updateRotatePromptState();
+      return;
+    }
+
     if (state.running) {
       state.orientationHold = !landscape;
       state.paused = state.orientationHold;
@@ -453,6 +461,8 @@
   function startGame() {
     if (IS_TOUCH_DEVICE && !isLandscapeViewport()) {
       state.pendingStart = true;
+      state.orientationHold = true;
+      state.paused = true;
       setOverlayVisibility(ui.startScreen, false);
       setOverlayVisibility(ui.gameOverScreen, false);
       updateRotatePromptState();
