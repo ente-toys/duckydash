@@ -767,8 +767,8 @@ body {
 
 .fullscreen-fab {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  right: 10px;
+  bottom: max(10px, calc(env(safe-area-inset-bottom) + 4px));
   z-index: 4;
   display: none;
   min-width: 62px;
