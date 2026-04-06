@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ducky Dash</title>
+  <meta name="description" content="Jump, collect memories, and outrun the T-Rex in Ducky Dash.">
+  <link rel="canonical" href="https://ente-toys.github.io/duckydash/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ducky Dash">
+  <meta property="og:description" content="Jump, collect memories, and outrun the T-Rex in Ducky Dash.">
+  <meta property="og:url" content="https://ente-toys.github.io/duckydash/">
+  <meta property="og:image" content="https://ente-toys.github.io/duckydash/ducky-dash-share.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Ducky Dash cover art with a duck riding a skateboard and the game logo.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ducky Dash">
+  <meta name="twitter:description" content="Jump, collect memories, and outrun the T-Rex in Ducky Dash.">
+  <meta name="twitter:image" content="https://ente-toys.github.io/duckydash/ducky-dash-share.png">
+  <meta name="twitter:image:alt" content="Ducky Dash cover art with a duck riding a skateboard and the game logo.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="game-card">
+      <section class="game-stage">
+        <canvas id="game-canvas" width="1280" height="720" aria-label="Ducky Dash game"></canvas>
+
+        <div class="in-game-hud" aria-label="Scoreboard">
+          <img class="brand-banner" src="ducky-logo.png" alt="Ducky Dash duck logo">
+          <div class="hud-stats">
+            <div class="stat-pill">
+              <span class="stat-label">Score</span>
+              <strong id="score">0</strong>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-label">High</span>
+              <strong id="high-score">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div id="superrun-timer" class="status-panel" aria-label="Game Status" aria-live="polite">
+          <div class="status-panel-copy">
+            <span id="powerup-label" class="status-panel-state">Stand by</span>
+          </div>
+          <strong id="superrun-timer-value" class="status-panel-value">--</strong>
+        </div>
+
+        <div id="shield-banner" class="shield-banner" aria-live="polite">Shield Activated Smash!</div>
+
+        <div class="rotate-notice" aria-hidden="true">
+          <div class="rotate-panel">
+            <span class="rotate-icon">↻</span>
+            <strong>Rotate your phone</strong>
+            <p>Ducky Dash plays best in landscape.</p>
+          </div>
+        </div>
+
+        <div id="start-screen" class="overlay overlay-visible">
+          <div class="overlay-panel">
+            <img class="start-card-banner" src="start-card-banner.png" alt="Ducky Dash banner art">
+            <p class="overlay-kicker">Endless runner</p>
+            <h2>Grab the memories before the lizard catches feelings.</h2>
+            <p class="overlay-body">
+              Jump and collect photos to power up Ente-grade protection while a relentless T-Rex tears through the feed behind you.
+            </p>
+            <div class="overlay-actions">
+              <button id="fullscreen-button" class="action-button action-button-secondary mobile-fullscreen-button" type="button">Full screen</button>
+              <button id="play-button" class="action-button">Play now</button>
+            </div>
+            <p class="controls-note"><strong>Controls:</strong> Desktop: <kbd>Space</kbd>/<kbd>W</kbd> jump twice, <kbd>P</kbd> pause. Mobile: tap to jump.</p>
+          </div>
+        </div>
+
+        <div id="game-over-screen" class="overlay">
+          <div class="overlay-panel">
+            <img class="game-over-topper" src="score-card-image.png" alt="Final score card illustration">
+            <p class="overlay-kicker danger">Backup interrupted</p>
+            <h2>The T-Rex broke through the vault.</h2>
+            <p class="overlay-body">Keep the memories moving and push for a longer streak.</p>
+            <div class="results-row">
+              <div class="results-card results-card-featured">
+                <span class="results-label">Final score</span>
+                <strong id="final-score">0</strong>
+              </div>
+              <div class="results-card">
+                <span class="results-label">Best run</span>
+                <strong id="best-score">0</strong>
+              </div>
+            </div>
+            <div class="overlay-actions">
+              <button id="fullscreen-retry-button" class="action-button action-button-secondary mobile-fullscreen-button" type="button">Full screen</button>
+              <button id="share-button" class="action-button action-button-secondary">Share result</button>
+              <button id="retry-button" class="action-button">Retry</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="pause-badge" class="pause-badge">Paused</div>
+
+        <button id="fullscreen-fab" class="fullscreen-fab" type="button" aria-label="Toggle full screen">Full</button>
+
+        <div class="touch-controls" aria-hidden="true">
+          <button id="jump-touch" class="touch-button touch-right">Jump</button>
+        </div>
+      </section>
+    </section>
+    <footer class="site-footer">
+      <a class="site-footer-link" href="https://ente.com" target="_blank" rel="noopener" aria-label="Visit ente.com">
+        <img class="site-footer-mark" src="ente-footer-badge.svg" alt="ente.com">
+      </a>
+    </footer>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>
