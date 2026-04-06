@@ -314,18 +314,6 @@
     document.documentElement.classList.toggle("is-mobile-landscape", IS_TOUCH_DEVICE && width >= height);
   }
 
-  async function tryLockLandscape() {
-    if (!IS_TOUCH_DEVICE || !screen.orientation || !screen.orientation.lock) {
-      return;
-    }
-
-    try {
-      await screen.orientation.lock("landscape");
-    } catch (error) {
-      // Mobile browsers may reject orientation lock depending on platform and gesture context.
-    }
-  }
-
   function setOverlayVisibility(element, visible) {
     element.classList.toggle("overlay-visible", visible);
   }
@@ -402,7 +390,6 @@
     if (!state.running) {
       resetGame();
     }
-    tryLockLandscape();
   }
 
   async function shareResult() {
